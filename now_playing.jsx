@@ -188,7 +188,9 @@ export const className = `
 
   #small-widget {
     background-color: #1c1c1e;
-    border-radius: 3px;
+    border-radius: 5px;
+    border: 1px solid #eeeeee30;
+    box-sizing: border;
     transition: scale ease-in-out 0.2s;
     overflow: hidden;
     cursor: pointer;
