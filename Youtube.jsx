@@ -240,8 +240,6 @@ export const updateState = (event, _) => {
   if (output.trim().length == 0) { hide(); return; }
 
   const [title, url] = output.split('\n');
-  if (window.url === url) { return; }
-  window.url = url;
   if (!url.includes('youtube.com')) { return; }
 
   let id = null;
@@ -258,6 +256,9 @@ export const updateState = (event, _) => {
     return;
   }
   show();
+
+  if (window.id === id) { return; }
+  window.id = url;
 
   const wrapper_img = wrapper.querySelector("img");
   const thumbnail = document.getElementById('thumbnail');
