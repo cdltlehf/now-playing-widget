@@ -1,5 +1,5 @@
 export const command = "osascript youtube-now-playing.widget/lib/get_url.scpt";
-export const refreshFrequency = 200;
+export const refreshFrequency = 1000;
 
 export const className = `
   top: 0;
@@ -15,8 +15,6 @@ export const className = `
   }
 
   #wrapper {
-    top: 50%;
-    left: 50%;
     position: absolute;
     align: center;
     width: 100vw;
@@ -24,42 +22,35 @@ export const className = `
 
     opacity: 1;
     transition: opacity ease-in-out 0.2s;
-    transform: translate(-50%, -50%);
     box-sizing: border-box;
     background-color: #1c1c1e;
     margin: auto;
     padding: 0px;
+  }
 
-    > #dim {
-      position: fixed;
-      left: 0px;
-      top: 0px;
-      height: 100vh;
-      width: 100vw;
-      background-color: #1c1c1e;
-      opacity: 0.4;
-      /* animation: pulse 4s infinite ease-in-out alternate; */
-    }
+  .dim {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    height: 100%;
+    width: 100%;
+    background-color: #1c1c1e;
+    opacity: 0.4;
   }
 
   #wrapper > img {
-    position: fixed;
-    left: 50%;
+    filter: saturate(300%) blur(100px);
     top: 50%;
+    left: 50%;
     min-height: 100vh;
     min-width: 100vw;
+    position: fixed;
     transform: translate(-50%,-50%) translateZ(0);
-    filter: saturate(300%) blur(100px);
-  }
-
-  @keyframes pulse {
-      0% { opacity: 0.4; }
-      100% { opacity: 0.7; }
   }
 
   #container {
     display: inline-block;
-    position: fixed;
+    position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%,-50%);
@@ -68,31 +59,34 @@ export const className = `
   }
 
   #thumbnail {
-    max-width: 640px;
-    max-height: 640px;
     margin: auto;
     position: relative;
     cursor: pointer;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    max-width: 50vw;
+    max-height: 50vh;
+    overflow: hidden;
+    box-shadow: 0px 0px 10px 0px #1c1c1e;
+    border-radius: 10px;
     transition: scale ease-in-out 0.2s;
 
     > img {
-      border-radius: 10px;
-      left: 50%;
-      top: 50%;
-      height: auto;
-      width: 100%;
-      box-shadow: 0px 0px 10px 0px #1c1c1e;
+      display: block;
+      object-fit: cover;
     }
   }
 
   #thumbnail:hover {
     scale: 1.01;
-    transition: scale ease-in-out 0.2s;
   }
 
   .hide #thumbnail {
-    scale: 0.5;
     cursor: default;
+    scale: 0.5;
   }
 
   @keyframes spin {
@@ -154,28 +148,10 @@ export const className = `
       left: 0%;
       width: 200%;
       height: 100%;
-      background: linear-gradient(
+      background: repeating-linear-gradient(
         45deg,
-        rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 5%,
-        rgba(255, 255, 255, 0) 5%, rgba(255, 255, 255, 0) 10%,
-        rgba(255, 255, 255, 1) 10%, rgba(255, 255, 255, 1) 15%,
-        rgba(255, 255, 255, 0) 15%, rgba(255, 255, 255, 0) 20%,
-        rgba(255, 255, 255, 1) 20%, rgba(255, 255, 255, 1) 25%,
-        rgba(255, 255, 255, 0) 25%, rgba(255, 255, 255, 0) 30%,
-        rgba(255, 255, 255, 1) 30%, rgba(255, 255, 255, 1) 35%,
-        rgba(255, 255, 255, 0) 35%, rgba(255, 255, 255, 0) 40%,
-        rgba(255, 255, 255, 1) 40%, rgba(255, 255, 255, 1) 45%,
-        rgba(255, 255, 255, 0) 45%, rgba(255, 255, 255, 0) 50%,
-        rgba(255, 255, 255, 1) 50%, rgba(255, 255, 255, 1) 55%,
-        rgba(255, 255, 255, 0) 55%, rgba(255, 255, 255, 0) 60%,
-        rgba(255, 255, 255, 1) 60%, rgba(255, 255, 255, 1) 65%,
-        rgba(255, 255, 255, 0) 65%, rgba(255, 255, 255, 0) 70%,
-        rgba(255, 255, 255, 1) 70%, rgba(255, 255, 255, 1) 75%,
-        rgba(255, 255, 255, 0) 75%, rgba(255, 255, 255, 0) 80%,
-        rgba(255, 255, 255, 1) 80%, rgba(255, 255, 255, 1) 85%,
-        rgba(255, 255, 255, 0) 85%, rgba(255, 255, 255, 0) 90%,
-        rgba(255, 255, 255, 1) 90%, rgba(255, 255, 255, 1) 95%,
-        rgba(255, 255, 255, 0) 95%, rgba(255, 255, 255, 0) 100%
+        rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 2.5%,
+        rgba(255, 255, 255, 0) 2.5%, rgba(255, 255, 255, 0) 5%
       );
       animation: 10s linear 0s infinite progress;
     }
@@ -203,38 +179,120 @@ export const className = `
       margin: 0px 1em 0px 1em;
     }
   }
+
+  #small-widget-wrapper {
+    transition: opacity ease-in-out 0.2s;
+    padding: 16px;
+    color: white;
+  }
+
+  #small-widget {
+    background-color: #1c1c1e;
+    border-radius: 3px;
+    transition: scale ease-in-out 0.2s;
+    overflow: hidden;
+    cursor: pointer;
+
+    position: fixed;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    width: 64px;
+    height: 64px;
+
+    transition: scale ease-in-out 0.2s;
+  }
+
+  #small-widget:hover {
+    scale: 1.05;
+  }
+
+  .hide #small-widget {
+    cursor: default;
+    scale: 0.5;
+  }
+
+  #small-widget > img:first-child {
+    filter: blur(20px);
+    transform: translateZ(0);
+    height: inherit;
+    width: inherit;
+    object-fit: cover;
+    position: absolute;
+  }
+
+  #small-thumbnail-img {
+    display: block;
+    object-fit: contain;
+    z-index: 1;
+  }
+
+  #small-title {
+    margin-left: 80px;
+    font-size: 12px;
+    text-shadow:
+      0px 0px 5px #1c1c1e,
+      0px 0px 5px #1c1c1e,
+      0px 0px 5px #1c1c1e;
+  }
 `
 
 export const render = (_) => {
   return (
-    <span id='wrapper' className='hide' url=''>
-      <img alt='background' draggable='false'/>
-      <div id='dim'></div>
-      <div id='container'>
-        <div id='thumbnail'>
-          <img alt='thumbnail' draggable='false'/>
-        </div>
-        <div id='subcontainer'>
-          <div id='title-wrapper'><div id='title'>title</div></div>
-          <div id='subtitle'>Youtube</div>
-          <div style={{fontSize: 18 + 'px', 'opacity': 0.5}}>
-            <span>--:--</span>
-            <span id='progress'><div></div></span>
-            <span>--:--</span>
+    <div>
+      <div id='wrapper' className='hide'>
+        <div></div>
+        <img alt='background' draggable='false'/>
+        <div className='dim'></div>
+        <div id='container'>
+          <div id='thumbnail'>
+            <img alt='thumbnail' draggable='false'/>
           </div>
-          <div id='controller'>
-            &#x25C2;&#x25C2;<span>&#x23f8;</span>&#x25B8;&#x25B8;
+          <div id='subcontainer'>
+            <div id='title-wrapper'><div id='title'></div></div>
+            <div id='subtitle'>Youtube</div>
+            <div style={{fontSize: 18 + 'px', 'opacity': 0.5}}>
+              <span>--:--</span>
+              <span id='progress'><div></div></span>
+              <span>--:--</span>
+            </div>
+            <div id='controller'>
+              &#x25C2;&#x25C2;<span>&#x23f8;</span>&#x25B8;&#x25B8;
+            </div>
           </div>
         </div>
       </div>
-    </span>
+      <div id='small-widget-wrapper' className='hide'>
+        <div id='small-widget'>
+          <img alt='small-widget' draggable='false'/>
+          <div className='dim'></div>
+          <img
+            id='small-thumbnail-img' alt='small thumbnail' draggable='false'
+          />
+        </div>
+        <div id='small-title'>title</div>
+      </div>
+    </div>
   );
 };
 
 export const updateState = (event, _) => {
+  if (window.minimized === undefined) { window.minimized = false; }
   const wrapper = document.getElementById('wrapper');
-  const hide = () => { wrapper.classList.add('hide'); };
-  const show = () => { wrapper.classList.remove('hide'); };
+  const small_widget_wrapper = (
+    document.getElementById('small-widget-wrapper'));
+  const hide = () => {
+    wrapper.classList.add('hide');
+    small_widget_wrapper.classList.add('hide');
+  };
+  const show = () => {
+    if (window.minimized) { small_widget_wrapper.classList.remove('hide'); }
+    else { wrapper.classList.remove('hide'); }
+  };
+  const minimize = () => { window.minimized = true; hide(); show(); };
+  const maximize = () => { window.minimized = false; hide(); show(); };
 
   const output = event.output;
   if (output.trim().length == 0) { hide(); return; }
@@ -260,12 +318,19 @@ export const updateState = (event, _) => {
   if (window.id === id) { return; }
   window.id = url;
 
-  const wrapper_img = wrapper.querySelector("img");
   const thumbnail = document.getElementById('thumbnail');
-  thumbnail.onclick = hide;
+  const wrapper_img = wrapper.querySelector("img");
   const thumbnail_img = thumbnail.querySelector("img");
+  const small_widget = document.getElementById('small-widget');
+  const small_widget_background_img = small_widget.querySelector("img");
+  const small_thumbnail_img = document.getElementById("small-thumbnail-img");
+
   const title_dom = document.getElementById('title');
+  const small_title_dom = document.getElementById('small-title');
   const title_wrapper = document.getElementById('title-wrapper');
+
+  thumbnail.onclick = minimize;
+  small_widget.onclick = maximize;
 
   const image = new Image();
   image.onload = (e) => {
@@ -279,6 +344,9 @@ export const updateState = (event, _) => {
     const src = e.target.src;
     wrapper_img.setAttribute('src', src);
     thumbnail_img.setAttribute('src', src);
+
+    small_widget_background_img.setAttribute('src', src);
+    small_thumbnail_img.setAttribute('src', src);
   };
   image.onerror = (e) => {
     const fallback_src = `https://img.youtube.com/vi/${id}/0.jpg`;
@@ -289,6 +357,7 @@ export const updateState = (event, _) => {
   const title_prefix = (
     title_split.slice(0, title_split.length - 1)).join(' - ')
   title_dom.innerHTML = title_prefix;
+  small_title_dom.innerHTML = title_prefix;
   if (title_wrapper.clientWidth < title_dom.clientWidth) {
     title_dom.classList.add("overflow-animation");
   } else {
