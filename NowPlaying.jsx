@@ -2,17 +2,10 @@ export const command = "osascript youtube-now-playing.widget/lib/get_url.scpt";
 export const refreshFrequency = 1000;
 
 export const className = `
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
   user-select: none;
   cursor: default;
   font-family: sans-serif;
-
-  .hide {
-    opacity: 0 !important;
-  }
+  pointer-events: none;
 
   #wrapper {
     position: absolute;
@@ -26,6 +19,7 @@ export const className = `
     background-color: #1c1c1e;
     margin: auto;
     padding: 0px;
+    pointer-events: auto;
   }
 
   .dim {
@@ -61,7 +55,6 @@ export const className = `
   #thumbnail {
     margin: auto;
     position: relative;
-    cursor: pointer;
 
     display: flex;
     flex-direction: column;
@@ -73,11 +66,6 @@ export const className = `
     box-shadow: 0px 0px 10px 0px #1c1c1e;
     border-radius: 10px;
     transition: scale ease-in-out 0.2s;
-
-    > img {
-      display: block;
-      object-fit: cover;
-    }
   }
 
   #thumbnail:hover {
@@ -133,6 +121,11 @@ export const className = `
     color: rgb(199, 199, 204);
   }
 
+  #progress-wrapper {
+    fontSize: 18px;
+    opacity: 0.5;
+  }
+
   #progress {
     background-color: #BBBBBB;
     border-radius: 0.15em;
@@ -184,16 +177,16 @@ export const className = `
     transition: opacity ease-in-out 0.2s;
     padding: 16px;
     color: white;
+    pointer-events: auto;
   }
 
   #small-widget {
     background-color: #1c1c1e;
-    border-radius: 5px;
+    border-radius: 14px;
     border: 1px solid #eeeeee30;
     box-sizing: border;
     transition: scale ease-in-out 0.2s;
     overflow: hidden;
-    cursor: pointer;
 
     position: fixed;
 
@@ -201,8 +194,8 @@ export const className = `
     flex-direction: column;
     justify-content: center;
 
-    width: 64px;
-    height: 64px;
+    width: 140px;
+    height: 140px;
 
     transition: scale ease-in-out 0.2s;
   }
@@ -239,6 +232,11 @@ export const className = `
       0px 0px 5px #1c1c1e,
       0px 0px 5px #1c1c1e;
   }
+
+  .hide {
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
 `
 
 export const render = (_) => {
@@ -255,7 +253,7 @@ export const render = (_) => {
           <div id='subcontainer'>
             <div id='title-wrapper'><div id='title'></div></div>
             <div id='subtitle'>Youtube</div>
-            <div style={{fontSize: 18 + 'px', 'opacity': 0.5}}>
+            <div id='progress-wrapper'>
               <span>--:--</span>
               <span id='progress'><div></div></span>
               <span>--:--</span>
@@ -274,7 +272,6 @@ export const render = (_) => {
             id='small-thumbnail-img' alt='small thumbnail' draggable='false'
           />
         </div>
-        <div id='small-title'>title</div>
       </div>
     </div>
   );
@@ -283,8 +280,8 @@ export const render = (_) => {
 export const updateState = (event, _) => {
   if (window.minimized === undefined) { window.minimized = false; }
   const wrapper = document.getElementById('wrapper');
-  const small_widget_wrapper = (
-    document.getElementById('small-widget-wrapper'));
+  const small_widget_wrapper =
+    document.getElementById('small-widget-wrapper');
   const hide = () => {
     wrapper.classList.add('hide');
     small_widget_wrapper.classList.add('hide');
@@ -304,14 +301,9 @@ export const updateState = (event, _) => {
 
   let id = null;
   try {
-    id = (
-      url.split('?', 2)[1]
-      .split('&')
-      .findLast(s => s.includes('v='))
-      .split('=')[1].trim()
-    );
-  }
-  catch (e) {
+    id = url.split('?', 2)[1]
+      .split('&').findLast(s => s.includes('v=')).split('=')[1].trim();
+  } catch (e) {
     hide()
     return;
   }
@@ -328,7 +320,6 @@ export const updateState = (event, _) => {
   const small_thumbnail_img = document.getElementById("small-thumbnail-img");
 
   const title_dom = document.getElementById('title');
-  const small_title_dom = document.getElementById('small-title');
   const title_wrapper = document.getElementById('title-wrapper');
 
   thumbnail.onclick = minimize;
@@ -356,10 +347,8 @@ export const updateState = (event, _) => {
   };
   image.src = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
   const title_split = title.split(' - ');
-  const title_prefix = (
-    title_split.slice(0, title_split.length - 1)).join(' - ')
+  const title_prefix = title_split.slice(0, title_split.length - 1).join(' - ')
   title_dom.innerHTML = title_prefix;
-  small_title_dom.innerHTML = title_prefix;
   if (title_wrapper.clientWidth < title_dom.clientWidth) {
     title_dom.classList.add("overflow-animation");
   } else {
