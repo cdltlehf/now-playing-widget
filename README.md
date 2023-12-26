@@ -1,7 +1,7 @@
 # Youtube NowPlaying for [Übersicht](http://tracesof.net/uebersicht/)
 
 An ios-style player from YouTube in Safari.
-Every button is fake. [Download]()
+Every button is fake. [Project](https://github.com/cdltlehf/youtube-now-playing-widget/tree/main)
 
 # Installation
 
