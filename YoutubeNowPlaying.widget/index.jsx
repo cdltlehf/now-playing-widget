@@ -1,4 +1,4 @@
-export const command = "osascript youtube-now-playing.widget/lib/get_url.scpt";
+export const command = "osascript YoutubeNowPlaying.widget/lib/get_url.scpt";
 export const refreshFrequency = 1000;
 
 export const className = `
