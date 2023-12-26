@@ -278,6 +278,8 @@ export const render = (_) => {
 };
 
 export const updateState = (event, _) => {
+  const uebersicht = require("uebersicht");
+
   if (window.minimized === undefined) { window.minimized = false; }
   const wrapper = document.getElementById('wrapper');
   const small_widget_wrapper =
@@ -310,7 +312,7 @@ export const updateState = (event, _) => {
   show();
 
   if (window.id === id) { return; }
-  window.id = url;
+  window.id = id;
 
   const thumbnail = document.getElementById('thumbnail');
   const wrapper_img = wrapper.querySelector("img");
@@ -330,7 +332,7 @@ export const updateState = (event, _) => {
     const fallback_src = `https://img.youtube.com/vi/${id}/0.jpg`;
     if (0 < e.target.naturalWidth && e.target.naturalWidth < 240) {
       if (e.target.src !== fallback_src) {
-        image.src = `https://img.youtube.com/vi/${id}/0.jpg`;
+        image.src = fallback_src;
         return;
       }
     }
@@ -340,6 +342,9 @@ export const updateState = (event, _) => {
 
     small_widget_background_img.setAttribute('src', src);
     small_thumbnail_img.setAttribute('src', src);
+    const rainbow_wal_plugin =
+        "bash ./YoutubeNowPlaying.widget/lib/rainbow_wal_plugin.sh"
+    uebersicht.run(`${rainbow_wal_plugin} ${image.src}`)
   };
   image.onerror = (e) => {
     const fallback_src = `https://img.youtube.com/vi/${id}/0.jpg`;
