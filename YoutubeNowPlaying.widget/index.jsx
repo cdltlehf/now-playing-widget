@@ -1,9 +1,10 @@
 const uebersicht = require("uebersicht");
 const rainbowWalPlugin =
     "bash ./YoutubeNowPlaying.widget/lib/rainbow_wal_plugin.sh";
-const hasRainbowWall = true;
+const useRainbowWall = true;
+const resetRainbowWall = (src) => { return uebersicht.run(`rainbow-wal`); }
 const callRainbowWall = (src) => {
-  return uebersicht.run(`rainbow-wal --filename ${src}`);
+  return uebersicht.run(`rainbow-wal ${src}`);
 }
 const reloadKittyConfig = () => {
   return uebersicht.run('kill -SIGUSR1 "$(pgrep kitty)" > /dev/null 2>&1;');
@@ -309,6 +310,11 @@ export const updateState = (event, _) => {
   const output = event.output;
   if (output.trim().length == 0) {
     hide();
+    if (useRainbowWall) {
+      resetRainbowWall()
+        .then(() => { reloadKittyConfig(); })
+        .catch((...output) => { console.debug('rainbow-wal', output); });
+    }
     console.debug("Script error ocurred");
     return;
   }
@@ -326,6 +332,11 @@ export const updateState = (event, _) => {
   } catch (e) {
     console.debug("Url is errornous.");
     hide()
+    if (useRainbowWall) {
+      resetRainbowWall()
+        .then(() => { reloadKittyConfig(); })
+        .catch((...output) => { console.debug('rainbow-wal', output); });
+    }
     return;
   }
   show();
@@ -362,8 +373,8 @@ export const updateState = (event, _) => {
 
     small_widget_background_img.setAttribute('src', src);
     small_thumbnail_img.setAttribute('src', src);
-      console.debug(image.src);
-    if (hasRainbowWall) {
+    console.debug(image.src);
+    if (useRainbowWall) {
       callRainbowWall(src)
         .then(() => { reloadKittyConfig(); })
         .catch((...output) => { console.debug('rainbow-wal', output); });
