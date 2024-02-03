@@ -1,3 +1,14 @@
+const uebersicht = require("uebersicht");
+const rainbowWalPlugin =
+    "bash ./YoutubeNowPlaying.widget/lib/rainbow_wal_plugin.sh";
+const hasRainbowWall = true;
+const callRainbowWall = (src) => {
+  return uebersicht.run(`rainbow-wal --filename ${src}`);
+}
+const reloadKittyConfig = () => {
+  return uebersicht.run('kill -SIGUSR1 "$(pgrep kitty)" > /dev/null 2>&1;');
+}
+
 export const command = "osascript YoutubeNowPlaying.widget/lib/get_url.scpt";
 export const refreshFrequency = 1000;
 
@@ -278,7 +289,7 @@ export const render = (_) => {
 };
 
 export const updateState = (event, _) => {
-  const uebersicht = require("uebersicht");
+  console.debug("updateState called");
 
   if (window.minimized === undefined) { window.minimized = false; }
   const wrapper = document.getElementById('wrapper');
@@ -296,23 +307,32 @@ export const updateState = (event, _) => {
   const maximize = () => { window.minimized = false; hide(); show(); };
 
   const output = event.output;
-  if (output.trim().length == 0) { hide(); return; }
+  if (output.trim().length == 0) {
+    hide();
+    console.debug("Script error ocurred");
+    return;
+  }
 
   const [title, url] = output.split('\n');
-  if (!url.includes('youtube.com')) { return; }
+  if (!url.includes('youtube.com')) {
+    console.debug("There is no youtube video currently playing.");
+    return;
+  }
 
   let id = null;
   try {
     id = url.split('?', 2)[1]
       .split('&').findLast(s => s.includes('v=')).split('=')[1].trim();
   } catch (e) {
+    console.debug("Url is errornous.");
     hide()
     return;
   }
   show();
 
-  if (window.id === id) { return; }
+  if (window.id === id) { console.debug("Id not updated."); return; }
   window.id = id;
+  console.debug("Id has been updated");
 
   const thumbnail = document.getElementById('thumbnail');
   const wrapper_img = wrapper.querySelector("img");
@@ -342,9 +362,12 @@ export const updateState = (event, _) => {
 
     small_widget_background_img.setAttribute('src', src);
     small_thumbnail_img.setAttribute('src', src);
-    const rainbow_wal_plugin =
-        "bash ./YoutubeNowPlaying.widget/lib/rainbow_wal_plugin.sh"
-    uebersicht.run(`${rainbow_wal_plugin} ${image.src}`)
+      console.debug(image.src);
+    if (hasRainbowWall) {
+      callRainbowWall(src)
+        .then(() => { reloadKittyConfig(); })
+        .catch((...output) => { console.debug('rainbow-wal', output); });
+    }
   };
   image.onerror = (e) => {
     const fallback_src = `https://img.youtube.com/vi/${id}/0.jpg`;
