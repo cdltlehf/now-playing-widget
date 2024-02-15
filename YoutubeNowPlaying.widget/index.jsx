@@ -31,7 +31,6 @@ export const className = `
     background-color: #1c1c1e;
     margin: auto;
     padding: 0px;
-    pointer-events: none;
   }
 
   .dim {
@@ -248,6 +247,9 @@ export const className = `
 
   .hide {
     opacity: 0 !important;
+  }
+
+  .hide * {
     pointer-events: none !important;
   }
 `
