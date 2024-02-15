@@ -31,7 +31,7 @@ export const className = `
     background-color: #1c1c1e;
     margin: auto;
     padding: 0px;
-    pointer-events: auto;
+    pointer-events: none;
   }
 
   .dim {
@@ -62,6 +62,7 @@ export const className = `
     transform: translate(-50%,-50%);
     text-align: center;
     color: white;
+    pointer-events: auto;
   }
 
   #thumbnail {
