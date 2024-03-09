@@ -21,3 +21,7 @@ clean:
 .PHONY: install
 install: $(TARGET)
 	@unzip -o $< -d $(WIDGETS_FOLDER)
+
+.PHONY: vim
+vim:
+	@vim $$(git ls-files)
