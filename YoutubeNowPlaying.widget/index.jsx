@@ -7,18 +7,18 @@ const useEffect = React.useEffect;
 export const className = style;
 
 const useRainbowWall = true;
+
 const resetRainbowWall = (src) => {
-  return run(
-    `rainbow-wal`
-    + 'kill -SIGUSR1 "$(pgrep kitty)" > /dev/null 2>&1;'
-  );
+  return run('rainbow-wal; kill -SIGUSR1 "$(pgrep kitty)" > /dev/null 2>&1;');
 }
+
 const callRainbowWall = (src) => {
-  return run(
-    `rainbow-wal ${src};`
-    + 'kill -SIGUSR1 "$(pgrep kitty)" > /dev/null 2>&1;'
-  );
+  return run([
+    `rainbow-wal --unsafe ${src}`,
+    'kill -SIGUSR1 "$(pgrep kitty)" > /dev/null 2>&1'
+  ].join(';'));
 }
+
 const reloadKittyConfig = () => {
   return run();
 }
@@ -51,7 +51,6 @@ const getId = (url) => {
 };
 
 const LargeWidget = (props) => {
-  console.debug(props);
   return (
     <div id='wrapper'>
       <AsyncImage alt='background' draggable='false' src={props.thumbnail}/>
@@ -91,7 +90,10 @@ const SmallWidget = (props) => {
 };
 
 const Widget = (props) => {
-  if (props.url == null) { return null; };
+  if (props.url == null) {
+    return null;
+    resetRainbowWall();
+  };
   const getThumbnail = (url) => {
     try {
       const id = url.split('?', 2)[1]
