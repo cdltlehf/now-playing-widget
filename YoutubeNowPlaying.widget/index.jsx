@@ -1,6 +1,6 @@
 import { run } from "uebersicht";
 import { React } from "uebersicht";
-import { style } from "./lib/style.jsx";
+import { style } from "./lib/style.js";
 
 const useState = React.useState;
 const useEffect = React.useEffect;
