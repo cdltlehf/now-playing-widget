@@ -27,8 +27,8 @@ export const command = "osascript YoutubeNowPlaying.widget/lib/get_url.scpt";
 export const refreshFrequency = 1000;
 
 const AsyncImage = (props) => {
-  const [src, setSrc] = useState(false);
-  React.useEffect(() => {
+  const [src, setSrc] = useState(null);
+  useEffect(() => {
     setSrc(null);
     if (props.src === null) { return; }
     const image = new Image();
@@ -39,15 +39,10 @@ const AsyncImage = (props) => {
     reloadKittyConfig();
     return () => { image.removeEventListener('load', load); }
   }, [props.src]);
-  if (src === props.src) {
+  if (src === props.src && src != null) {
     return <img {...props} />;
   }
   return null;
-};
-
-const getId = (url) => {
-  return url.split('?', 2)[1]
-    .split('&').findLast(s => s.includes('v=')).split('=')[1].trim();
 };
 
 const LargeWidget = (props) => {
@@ -89,33 +84,74 @@ const SmallWidget = (props) => {
   </div>
 };
 
+const getThumbnailFromId = async (id) => {
+  const filenames = [
+    'maxresdefault.jpg',
+    'sddefault.jpg',
+    'hqdefault.jpg',
+    'mqdefault.jpg',
+    'default.jpg'
+  ];
+
+  for (const filename of filenames) {
+    const promise = new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => { resolve(img); }
+      img.onerror = reject;
+      img.src = `https://img.youtube.com/vi/${id}/${filename}`;
+    });
+    const img = await promise;
+    if (img == null) { continue; }
+    if (img.width > 120) {
+      return img.src;
+    }
+  }
+  return null;
+}
+
+const getIdFromUrl = (url) => {
+  try {
+    return url.split('?', 2)[1]
+      .split('&').findLast(s => s.includes('v=')).split('=')[1].trim();
+  } catch (e) {
+    return null;
+  }
+}
+
 const Widget = (props) => {
+  const [thumbnail, setThumbnail] = useState(null);
+  const [minimized, setMinimized] = useState(false);
+
   if (props.url == null) {
     return null;
     resetRainbowWall();
   };
-  const getThumbnail = (url) => {
-    try {
-      const id = url.split('?', 2)[1]
-        .split('&')
-        .findLast(s => s.includes('v='))
-        .split('=')[1].trim();
-      return `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
-    } catch (e) {
-      console.debug("Url is errornous.");
-      console.debug("Url: ", url);
+
+  const id = getIdFromUrl(props.url);
+  if (id == null) {
+    console.debug("Url is errornous.");
+    console.debug("Url: ", url);
+    return null;
+  }
+
+  getThumbnailFromId(id).then((thumbnail) => {
+    if (thumbnail == null) {
+      console.debug("Thumbnail is null.");
+      console.debug("Id: ", id);
       return null;
-    };
-  };
-  const thumbnail = getThumbnail(props.url);
-  const [minimized, setMinimized] = useState(false);
+    }
+    setThumbnail(thumbnail);
+  });
+
   const sleep = async (ms) => new Promise(res => setTimeout(res, ms));
   const minimize = () => { setMinimized(true); };
   const maximize = () => { setMinimized(false); };
+
   const largeWidget = <LargeWidget
     title={props.title} thumbnail={thumbnail}
     minimize={minimize} className={minimized ? 'hide' : ''}
   />
+
   const smallWidget = <SmallWidget
     thumbnail={thumbnail} maximize={maximize}
     className={minimized ? 'hide' : ''}
