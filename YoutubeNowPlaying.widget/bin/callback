@@ -1,0 +1,4 @@
+#!/bin/bash
+rainbow-wal "$1"
+command -v pywal2alacritty && pywal2alacritty
+kill -SIGUSR1 "$(pgrep kitty)" > /dev/null 2>&1

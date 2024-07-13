@@ -8,22 +8,11 @@ export const className = style;
 
 const useRainbowWall = true;
 
-const resetRainbowWall = (src) => {
-  return run('rainbow-wal; kill -SIGUSR1 "$(pgrep kitty)" > /dev/null 2>&1;');
-}
+const binHome = "YoutubeNowPlaying.widget/bin";
+const reset = () => run(`${binHome}/reset`);
+const callback = (src) => run(`${binHome}/callback ${src}`);
 
-const callRainbowWall = (src) => {
-  return run([
-    `rainbow-wal --unsafe ${src}`,
-    'kill -SIGUSR1 "$(pgrep kitty)" > /dev/null 2>&1'
-  ].join(';'));
-}
-
-const reloadKittyConfig = () => {
-  return run();
-}
-
-export const command = "osascript YoutubeNowPlaying.widget/lib/get_url.scpt";
+export const command = `${binHome}/get-url`;
 export const refreshFrequency = 1000;
 
 const AsyncImage = (props) => {
@@ -35,8 +24,7 @@ const AsyncImage = (props) => {
     const load = () => { setSrc(props.src); }
     image.onload = load;
     image.src = props.src;
-    callRainbowWall(props.src);
-    reloadKittyConfig();
+    callback(props.src);
     return () => { image.removeEventListener('load', load); }
   }, [props.src]);
   if (src === props.src && src != null) {
@@ -124,13 +112,13 @@ const Widget = (props) => {
 
   if (props.url == null) {
     return null;
-    resetRainbowWall();
+    reset();
   };
 
   const id = getIdFromUrl(props.url);
   if (id == null) {
     console.debug("Url is errornous.");
-    console.debug("Url: ", url);
+    console.debug("Url: ", props.url);
     return null;
   }
 
