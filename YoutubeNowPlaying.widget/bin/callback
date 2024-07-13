@@ -1,4 +1,8 @@
 #!/bin/bash
 rainbow-wal "$1"
-command -v pywal2alacritty && pywal2alacritty
+mkdir -p "$HOME/.cache/wal/"
+true > "$HOME/.cache/wal/colors-alacritty.toml"
+command -v pywal2alacritty \
+  && pywal2alacritty "$HOME/.cache/wal/colors-alacritty.toml"
+touch "${XDG_CONFIG_HOME:-$HOME/.config}/alacritty/alacritty.toml"
 kill -SIGUSR1 "$(pgrep kitty)" > /dev/null 2>&1

@@ -9,7 +9,8 @@ CLEAN_LIST := $(TARGET)
 default: zip
 
 $(TARGET): $(WIDGET)
-	@zip -r $(TARGET) $<
+	@rm -f $@
+	@zip -r $@ $<
 
 .PHONY: zip
 zip: $(TARGET)
