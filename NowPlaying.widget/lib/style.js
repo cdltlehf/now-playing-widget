@@ -3,9 +3,11 @@ export const style = {
   cursor: "default",
   fontFamily: "sans-serif",
   pointerEvents: "none",
-  "img": {
-    opacity: 1,
-    transition: "opacity 1s ease-in-out",
+  "progress[value]::-webkit-progress-bar": {
+    "background-color": "rgba(255, 229, 234, 0.2)",
+  },
+  "progress[value]::-webkit-progress-value": {
+    "background-color": "rgba(255, 229, 234, 0.6)",
   },
   "#wrapper": {
     position: "absolute",
@@ -119,15 +121,6 @@ export const style = {
     width: "100%",
     overflow: "hidden",
     position: "relative",
-    "> div": {
-      position: "absolute",
-      left: "0%",
-      width: "200%",
-      height: "100%",
-      background:
-        "repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.5) 2.5%, rgba(255, 255, 255, 0) 2.5%, rgba(255, 255, 255, 0) 5%)",
-      animation: "10s linear 0s infinite progress",
-    },
   },
   "@keyframes progress": { "0%": { left: "0%" }, "100%": { left: "-100%" } },
   "#controller": {

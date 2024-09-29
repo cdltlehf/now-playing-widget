@@ -6,6 +6,22 @@ const useState = React.useState;
 const useEffect = React.useEffect;
 
 const getArtworkData = () => run("nowplaying-cli get artworkData");
+const secondsToStr = (seconds) => {
+  const hours = Math.floor(seconds / 3600);
+  seconds -= hours * 3600;
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = Math.floor(seconds - minutes * 60);
+
+  const hoursStr = hours.toString().padStart(2, '0');
+  const minutesStr = minutes.toString().padStart(2, '0');
+  const secondsStr = remainingSeconds.toString().padStart(2, '0');
+
+  if (hours > 0) {
+    return `${hoursStr}:${minutesStr}:${secondsStr}`;
+  } else {
+    return `${minutesStr}:${secondsStr}`;
+  }
+};
 
 const AsyncImage = (props) => {
   const [src, setSrc] = useState(null);
@@ -35,10 +51,18 @@ const LargeWidget = (props) => {
         </div>
         <div id='subcontainer'>
           <div id='timestamp'>
-            <span id='elapsed-time'>--:--</span>
-            <span id='remaining-time'>--:--</span>
+            <span id='elapsed-time'>
+              {secondsToStr(props.elapsedTime)}
+            </span>
+            <span id='remaining-time'>
+              -{secondsToStr(props.duration - props.elapsedTime)}
+            </span>
           </div>
-          <div id='progress'><div></div></div>
+          <progress
+            id='progress'
+            max={props.duration}
+            value={props.elapsedTime}
+          ></progress>
           <div id='title-wrapper'><div id='title'>{props.title}</div></div>
           <div id='subtitle'>{props.artist} — {props.album}</div>
         </div>
@@ -78,11 +102,9 @@ const Widget = (props) => {
 
   if (props.willUpdateArtwork) {
     getArtworkData().then(data => {
-      console.debug('load');
       setThumbnail(`data:image/jpeg;base64,${data}`);
     });
   }
-
 
   const sleep = async (ms) => new Promise(res => setTimeout(res, ms));
   const minimize = () => { setMinimized(true); };
@@ -90,6 +112,7 @@ const Widget = (props) => {
 
   const largeWidget = <LargeWidget
     title={props.title} artist={props.artist} album={props.album}
+    duration={props.duration} elapsedTime={props.elapsedTime}
     thumbnail={thumbnail} minimize={minimize}
     className={minimized ? 'hide' : ''}
   />
@@ -102,15 +125,17 @@ const Widget = (props) => {
 };
 
 export const className = style;
-export const command = "nowplaying-cli get title artist album";
+export const command = "nowplaying-cli get title artist album duration elapsedTime";
 export const refreshFrequency = 1000;
-export const render = ({title, artist, album, willUpdateArtwork}) => {
+export const render = (output) => {
+  const {title, artist, album, willUpdateArtwork, duration, elapsedTime} = output
   if (title === 'null' && artist === 'null' && album === 'null') {
     return null;
   }
   return <
     Widget
     title={title} artist={artist} album={album}
+    duration={duration} elapsedTime={elapsedTime}
     willUpdateArtwork={willUpdateArtwork}
   />;
 }
@@ -126,6 +151,8 @@ export const updateState = (event, state) => {
   const title = info[0];
   const artist = info[1];
   const album = info[2];
+  const duration = info[3];
+  const elapsedTime = info[4];
   const willUpdateArtwork = (state.title !== title);
-  return { title, artist, album, willUpdateArtwork };
+  return { title, artist, album, willUpdateArtwork, duration, elapsedTime };
 }
