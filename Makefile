@@ -1,4 +1,4 @@
-TARGET_NAME := YoutubeNowPlaying
+TARGET_NAME := NowPlaying
 WIDGET := $(TARGET_NAME).widget
 TARGET := $(WIDGET).zip
 WIDGETS_FOLDER := "${HOME}/Library/Application Support/Übersicht/widgets"

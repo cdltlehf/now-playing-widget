@@ -3,6 +3,10 @@ export const style = {
   cursor: "default",
   fontFamily: "sans-serif",
   pointerEvents: "none",
+  "img": {
+    opacity: 1,
+    transition: "opacity 1s ease-in-out",
+  },
   "#wrapper": {
     position: "absolute",
     align: "center",
@@ -13,7 +17,7 @@ export const style = {
     boxSizing: "border-box",
     backgroundColor: "#1c1c1e",
     margin: "auto",
-    padding: "0px"
+    padding: "0px",
   },
   ".dim": {
     position: "absolute",
@@ -22,16 +26,21 @@ export const style = {
     height: "100%",
     width: "100%",
     backgroundColor: "#1c1c1e",
-    opacity: 0.4
+    opacity: 0.4,
+    animation: "2s ease-in-out 0s infinite alternate dim",
+  },
+  "@keyframes dim": {
+    "0%": { "opacity": 0.4 },
+    "100%": { "opacity": 0.6 },
   },
   "#wrapper > img": {
-    filter: "saturate(300%) blur(100px)",
+    filter: "saturate(500%) blur(100px)",
     top: "50%",
     left: "50%",
     minHeight: "100vh",
     minWidth: "100vw",
     position: "fixed",
-    transform: "translate(-50%,-50%) translateZ(0)"
+    transform: "translate(-50%,-50%) translateZ(0)",
   },
   "#container": {
     display: "inline-block",
@@ -41,71 +50,84 @@ export const style = {
     transform: "translate(-50%,-50%)",
     textAlign: "center",
     color: "white",
-    pointerEvents: "auto"
+    pointerEvents: "auto",
   },
   "#thumbnail": {
     margin: "auto",
-    position: "relative",
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    maxWidth: "50vw",
-    maxHeight: "50vh",
-    overflow: "hidden",
-    boxShadow: "0px 0px 10px 0px #1c1c1e",
-    borderRadius: "10px",
-    transition: "scale ease-in-out 0.2s"
+    aspectRatio: "1 / 1",
+    maxHeight: "62vw",
+    width: "62vh",
   },
-  "#thumbnail:hover": { scale: "1.01" },
+  "#thumbnail > img": {
+    objectFit: "cover",
+    boxShadow: "0px 0px 5px 0px #1c1c1e10",
+    borderRadius: "10px",
+    border: "1px solid #eeeeee30",
+    transition: "scale ease-in-out 0.2s",
+  },
+  "#thumbnail > img:hover": { scale: "1.01" },
   ".hidden #thumbnail": { cursor: "default", scale: "0.5" },
   "@keyframes spin": { "100%": { transform: "rotate(360deg)" } },
   "#subcontainer": {
-    backgroundColor: "#1c1c1eC0",
-    display: "inline-block",
-    padding: "20px 60px",
-    margin: "30px",
-    borderRadius: "15px",
-    transition: "width 0.2s ease-in-out",
-    maxWidth: "80vw"
+    position: "fixed",
+    height: "auto",
+    width: "100%",
+    boxSizing: "border-box",
+    padding: "45px 24px 0px 24px",
+    lineHeight: "1.0em",
   },
-  "#title-wrapper": { width: "100%", overflow: "hidden", textAlign: "center" },
+  "#title-wrapper": { width: "100%", textAlign: "center" },
   "#title": {
-    color: "rgb(229, 229, 234)",
+    color: "rgba(229, 229, 234, 0.95)",
     display: "inline-block",
-    fontSize: "20px",
+    fontSize: "17px",
     fontWeight: "bold",
-    whiteSpace: "nowrap"
+    whiteSpace: "nowrap",
+    textOverflow: "ellipsis",
+    maxWidth: "100%",
+    overflow: "hidden",
   },
+  "#timestamp": {
+    fontSize: "14px",
+    color: "rgba(229, 229, 234, 0.6)",
+  },
+  "#elapsed-time": { "float": "left" },
+  "#remaining-time": { "float": "right" },
   ".overflow-animation": { position: "relative" },
   "@keyframes move": {
     "0%": { transform: "translateX(0%)", left: "0%" },
-    "100%": { transform: "translateX(-100%)", left: "100%" }
+    "100%": { transform: "translateX(-100%)", left: "100%" },
   },
   "#subtitle": {
-    fontSize: "18px",
+    fontSize: "17px",
     margin: "0.2em",
-    color: "rgb(199, 199, 204)"
+    color: "rgba(229, 229, 234, 0.6)",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    maxWidth: "100%",
+    overflow: "hidden",
   },
-  "#progress-wrapper": { fontsize: "18px", opacity: 0.5 },
   "#progress": {
-    backgroundColor: "#BBBBBB",
+    backgroundColor: "rgba(255, 229, 234, 0.2)",
     borderRadius: "0.15em",
+    margin: "9px 0px 10px 0px",
     display: "inline-block",
-    height: "0.3em",
-    width: "10em",
-    margin: "0em 0.8em",
+    height: "4px",
+    width: "100%",
     overflow: "hidden",
     position: "relative",
-    verticalAlign: "0.14em",
     "> div": {
       position: "absolute",
       left: "0%",
       width: "200%",
       height: "100%",
       background:
-        "repeating-linear-gradient(\n        45deg,\n        rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 2.5%,\n        rgba(255, 255, 255, 0) 2.5%, rgba(255, 255, 255, 0) 5%\n      )",
-      animation: "10s linear 0s infinite progress"
-    }
+        "repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.5) 2.5%, rgba(255, 255, 255, 0) 2.5%, rgba(255, 255, 255, 0) 5%)",
+      animation: "10s linear 0s infinite progress",
+    },
   },
   "@keyframes progress": { "0%": { left: "0%" }, "100%": { left: "-100%" } },
   "#controller": {
@@ -118,14 +140,14 @@ export const style = {
       fontSize: "40px",
       verticalAlign: "-0.15em",
       display: "inline-block",
-      margin: "0px 1em 0px 1em"
-    }
+      margin: "0px 1em 0px 1em",
+    },
   },
   "#small-widget-wrapper": {
     transition: "opacity ease-in-out 0.2s",
     padding: "16px",
     color: "white",
-    pointerEvents: "auto"
+    pointerEvents: "auto",
   },
   "#small-widget": {
     backgroundColor: "#1c1c1e",
@@ -139,7 +161,7 @@ export const style = {
     flexDirection: "column",
     justifyContent: "center",
     width: "140px",
-    height: "140px"
+    height: "140px",
   },
   "#small-widget:hover": { scale: "1.05" },
   ".hide #small-widget": { cursor: "default", scale: "0.5" },
@@ -149,17 +171,16 @@ export const style = {
     height: "inherit",
     width: "inherit",
     objectFit: "cover",
-    position: "absolute"
+    position: "absolute",
   },
   "#small-thumbnail-img": { display: "block", objectFit: "contain", zIndex: 1 },
   "#small-title": {
     marginLeft: "80px",
     fontSize: "12px",
-    textShadow:
-      "0px 0px 5px #1c1c1e,\n"
-      + "0px 0px 5px #1c1c1e,\n"
-      + "0px 0px 5px #1c1c1e"
+    textShadow: "0px 0px 5px #1c1c1e,\n" +
+      "0px 0px 5px #1c1c1e,\n" +
+      "0px 0px 5px #1c1c1e",
   },
   ".hide": { opacity: "0 !important" },
-  ".hide *": { pointerEvents: "none !important" }
-}
+  ".hide *": { pointerEvents: "none !important" },
+};
