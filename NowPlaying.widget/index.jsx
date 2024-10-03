@@ -1,20 +1,29 @@
-import { run } from "uebersicht";
-import { React } from "uebersicht";
+// @ts-ignore Ignore import
+import { React, run } from "uebersicht";
 import { style } from "./lib/style.js";
 
 const useState = React.useState;
 const useEffect = React.useEffect;
 
-const getArtworkData = () => run("nowplaying-cli get artworkData");
+const fetchArtwork = () =>
+  run("nowplaying-cli get artworkMIMEType artworkData")
+    .then((output) => {
+      const [mimeType, data] = output.split("\n");
+      if (mimeType === "null" || data === "null") {
+        throw new Error("Artwork not available");
+      }
+      return `data:${mimeType};base64,${data}`;
+    });
+
 const secondsToStr = (seconds) => {
   const hours = Math.floor(seconds / 3600);
   seconds -= hours * 3600;
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = Math.floor(seconds - minutes * 60);
 
-  const hoursStr = hours.toString().padStart(2, '0');
-  const minutesStr = minutes.toString().padStart(2, '0');
-  const secondsStr = remainingSeconds.toString().padStart(2, '0');
+  const hoursStr = hours.toString().padStart(2, "0");
+  const minutesStr = minutes.toString().padStart(2, "0");
+  const secondsStr = remainingSeconds.toString().padStart(2, "0");
 
   if (hours > 0) {
     return `${hoursStr}:${minutesStr}:${secondsStr}`;
@@ -23,136 +32,105 @@ const secondsToStr = (seconds) => {
   }
 };
 
-const AsyncImage = (props) => {
-  const [src, setSrc] = useState(null);
-  useEffect(() => {
-    setSrc(null);
-    if (props.src === null) { return; }
-    const image = new Image();
-    const load = () => { setSrc(props.src); }
-    image.onload = load;
-    image.src = props.src;
-    return () => { image.removeEventListener('load', load); }
-  }, [props.src]);
-  if (src === props.src && src != null) {
-    return <img {...props} />;
-  }
-  return null;
-};
+const LargeWidget = ({ nowplaying_info }) => {
+  if (nowplaying_info.title == null) return;
 
-const LargeWidget = (props) => {
+  const { title, artist, album, duration, elapsedTime } = nowplaying_info;
+  const [src, setSrc] = useState(null);
+
+  useEffect(() => {
+    fetchArtwork().then((src) => setSrc(src)).catch(() => setSrc(null));
+  }, [title]);
+
+  useEffect(() => {
+    if (src == null) {
+      fetchArtwork().then((src) => setSrc(src)).catch(() => setSrc(null));
+    }
+  }, [nowplaying_info]);
+
   return (
-    <div id='wrapper'>
-      <AsyncImage alt='background' draggable='false' src={props.thumbnail}/>
-      <div className='dim'></div>
-      <div id='container'>
-        <div id='thumbnail' onClick={props.minimize}>
-          <AsyncImage alt='thumbnail' draggable='false' src={props.thumbnail}/>
+    <div id="wrapper">
+      {src != null
+        ? <img alt="background" draggable="false" src={src} />
+        : null}
+      <div className="dim"></div>
+      <div id="container">
+        <div id="thumbnail">
+          {src != null
+            ? <img alt="background" draggable="false" src={src} />
+            : null}
         </div>
-        <div id='subcontainer'>
-          <div id='timestamp'>
-            <span id='elapsed-time'>
-              {secondsToStr(props.elapsedTime)}
+        <div id="subcontainer">
+          <div id="timestamp">
+            <span id="elapsed-time">
+              {elapsedTime == null ? "--:--" : secondsToStr(elapsedTime)}
             </span>
-            <span id='remaining-time'>
-              -{secondsToStr(props.duration - props.elapsedTime)}
+            <span id="remaining-time">
+              {elapsedTime == null
+                ? "--:--"
+                : "-" + secondsToStr(duration - elapsedTime)}
             </span>
           </div>
-          <progress
-            id='progress'
-            max={props.duration}
-            value={props.elapsedTime}
-          ></progress>
-          <div id='title-wrapper'><div id='title'>{props.title}</div></div>
-          <div id='subtitle'>{props.artist} — {props.album}</div>
+          <progress max={duration} value={elapsedTime}><div></div></progress>
+          <div id="title">{title}</div>
+          <div id="subtitle">{artist} — {album}</div>
         </div>
       </div>
     </div>
   );
 };
+
 // <div id='controller'>
 //   &#x25C2;&#x25C2;<span>&#x23f8;</span>&#x25B8;&#x25B8;
 // </div>
 
-const SmallWidget = (props) => {
-  return <div id='small-widget-wrapper' onClick={props.maximize}>
-    <div id='small-widget'>
-      <AsyncImage alt='small-widget' draggable='false' src={props.thumbnail}/>
-      <div className='dim'></div>
-      <AsyncImage
-        id='small-thumbnail-img' alt='small thumbnail' draggable='false'
-        src={props.thumbnail}
-      />
-    </div>
-  </div>
-};
+// const SmallWidget = (props) => {
+//   return <div id='small-widget-wrapper' onClick={props.maximize}>
+//     <div id='small-widget'>
+//       <AsyncImage alt='small-widget' draggable='false' src={props.thumbnail}/>
+//       <div className='dim'></div>
+//       <AsyncImage
+//         id='small-thumbnail-img' alt='small thumbnail' draggable='false'
+//         src={props.thumbnail}
+//       />
+//     </div>
+//   </div>
+// };
 
-const getIdFromUrl = (url) => {
-  try {
-    return url.split('?', 2)[1]
-      .split('&').findLast(s => s.includes('v=')).split('=')[1].trim();
-  } catch (e) {
-    return null;
-  }
-}
-
-const Widget = (props) => {
-  const [thumbnail, setThumbnail] = useState(null);
-  const [minimized, setMinimized] = useState(false);
-
-  if (props.willUpdateArtwork) {
-    getArtworkData().then(data => {
-      setThumbnail(`data:image/jpeg;base64,${data}`);
-    });
-  }
-
-  const sleep = async (ms) => new Promise(res => setTimeout(res, ms));
-  const minimize = () => { setMinimized(true); };
-  const maximize = () => { setMinimized(false); };
-
-  const largeWidget = <LargeWidget
-    title={props.title} artist={props.artist} album={props.album}
-    duration={props.duration} elapsedTime={props.elapsedTime}
-    thumbnail={thumbnail} minimize={minimize}
-    className={minimized ? 'hide' : ''}
-  />
-
-  const smallWidget = <SmallWidget
-    thumbnail={thumbnail} maximize={maximize}
-    className={minimized ? 'hide' : ''}
-  />;
-  return !minimized ? largeWidget : smallWidget;
+const Widget = ({ nowplaying_info }) => {
+  return <LargeWidget nowplaying_info={nowplaying_info} />;
 };
 
 export const className = style;
-export const command = "nowplaying-cli get title artist album duration elapsedTime";
+export const command =
+  "nowplaying-cli get title artist album duration elapsedTime";
 export const refreshFrequency = 1000;
-export const render = (output) => {
-  const {title, artist, album, willUpdateArtwork, duration, elapsedTime} = output
-  if (title === 'null' && artist === 'null' && album === 'null') {
+export const render = (nowplaying_info) => {
+  const { title, artist, album } = nowplaying_info;
+  if (title === null && artist === null && album === null) {
     return null;
   }
-  return <
-    Widget
-    title={title} artist={artist} album={album}
-    duration={duration} elapsedTime={elapsedTime}
-    willUpdateArtwork={willUpdateArtwork}
-  />;
-}
-export const initialState = {
-  "title": "null",
-  "artist": "null",
-  "album": "null",
-  "willUpdateArtwork": false
+  return <Widget nowplaying_info={nowplaying_info} />;
 };
-export const updateState = (event, state) => {
-  const { output } = event;
-  const info = output.split('\n');
-  const title = info[0];
-  const artist = info[1];
-  const album = info[2];
-  const duration = info[3];
-  const elapsedTime = info[4];
-  const willUpdateArtwork = (state.title !== title);
-  return { title, artist, album, willUpdateArtwork, duration, elapsedTime };
-}
+
+export const initialState = {
+  "title": null,
+  "artist": null,
+  "album": null,
+  "duration": null,
+  "elapsedTime": null,
+};
+
+export const updateState = ({ output }) => {
+  let [title, artist, album, duration, elapsedTime] = output.split("\n");
+  // FIXME: title can be 'null'...
+  title = title === "null" ? null : title;
+  artist = artist === "null" ? null : artist;
+  album = album === "null" ? null : album;
+  duration = duration === "null" ? null : duration;
+  elapsedTime = elapsedTime === "null" ? null : elapsedTime;
+  if (title === null && artist === null && album === null) {
+    return null;
+  }
+  return { title, artist, album, duration, elapsedTime };
+};

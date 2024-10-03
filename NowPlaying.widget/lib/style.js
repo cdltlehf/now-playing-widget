@@ -3,12 +3,34 @@ export const style = {
   cursor: "default",
   fontFamily: "sans-serif",
   pointerEvents: "none",
+  "progress": {
+    borderRadius: "0.15em",
+    margin: "9px 0px 10px 0px",
+    height: "4px",
+    width: "100%",
+  },
   "progress[value]::-webkit-progress-bar": {
-    "background-color": "rgba(255, 229, 234, 0.2)",
+    backgroundColor: "rgba(255, 229, 234, 0.2)",
   },
   "progress[value]::-webkit-progress-value": {
-    "background-color": "rgba(255, 229, 234, 0.6)",
+    backgroundColor: "rgba(255, 229, 234, 0.6)",
   },
+  "progress:not([value])::-webkit-progress-bar": {
+    backgroundColor: "rgba(255, 229, 234, 0.2)",
+  },
+  // ".progress-container": {
+  //   height: "4px",
+  // },
+  // ".progress-container > div": {
+  //   position: "absolute",
+  //   left: "0%",
+  //   width: "200%",
+  //   height: "100%",
+  //   background:
+  //     "repeating-linear-gradient(\n        45deg,\n        rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 2.5%,\n        rgba(255, 255, 255, 0) 2.5%, rgba(255, 255, 255, 0) 5%\n      )",
+  //   animation: "10s linear 0s infinite progress"
+  // },
+  "@keyframes progress": { "0%": { left: "0%" }, "100%": { left: "-100%" } },
   "#wrapper": {
     position: "absolute",
     align: "center",
@@ -81,7 +103,6 @@ export const style = {
     padding: "45px 24px 0px 24px",
     lineHeight: "1.0em",
   },
-  "#title-wrapper": { width: "100%", textAlign: "center" },
   "#title": {
     color: "rgba(229, 229, 234, 0.95)",
     display: "inline-block",
@@ -112,17 +133,6 @@ export const style = {
     maxWidth: "100%",
     overflow: "hidden",
   },
-  "#progress": {
-    backgroundColor: "rgba(255, 229, 234, 0.2)",
-    borderRadius: "0.15em",
-    margin: "9px 0px 10px 0px",
-    display: "inline-block",
-    height: "4px",
-    width: "100%",
-    overflow: "hidden",
-    position: "relative",
-  },
-  "@keyframes progress": { "0%": { left: "0%" }, "100%": { left: "-100%" } },
   "#controller": {
     fontFamily: "monospace",
     fontSize: "30px",
