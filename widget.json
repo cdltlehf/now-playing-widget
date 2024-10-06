@@ -1,7 +1,7 @@
 {
-  "name": "Youtube Now-Playing",
+  "name": "Now-Playing",
   "description":
-    "An ios-style player from YouTube in Safari. Every button is fake.",
+    "A now playing widget mimicking the Music app",
   "author": "cdltlehf",
   "email": "cdltlehf@naver.com"
 }
