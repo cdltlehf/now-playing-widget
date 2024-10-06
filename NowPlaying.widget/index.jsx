@@ -102,11 +102,11 @@ const Widget = ({ nowplaying_info }) => {
         </div>
       )}
       <div
-        className={"w-40p h-full box-border z-10 place-content-center pointer-events-auto flex-col " +
+        className={"box-border z-10 place-content-center pointer-events-auto flex-col " +
           (minimized
             ? "bg-black radius-10 w-10 h-10 fixed overflow-hidden shadow"
-            : "flex")}
-        onMouseEnter={() => setShowControl(true)}
+            : "w-40p h-full flex")}
+        onMouseMove={() => setShowControl(true)}
         onMouseLeave={() => setShowControl(false)}
         onMouseDown={minimized ? startDragging : null}
         style={minimized
@@ -125,6 +125,7 @@ const Widget = ({ nowplaying_info }) => {
                         (sourcePosition.y - e.clientY) ** 2 < 100
                 ) {
                   setMinimized(!minimized);
+                  setShowControl(false);
                 }
               }}
             >
