@@ -61,7 +61,6 @@ const Widget = ({ nowplaying_info }) => {
   const startDragging = (e) => {
     setDragging(true);
     setSourcePosition({ x: e.clientX, y: e.clientY });
-    console.log(e);
     setOffset({ x: e.clientX - position.x, y: e.clientY - position.y });
   };
 

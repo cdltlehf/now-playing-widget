@@ -8,22 +8,21 @@ CLEAN_LIST := $(TARGET)
 .PHONY: default
 default: zip
 
-.PHONY: $(TARGET)
-$(TARGET): $(WIDGET)
-	@rm -f $@
-	@zip -r $@ $<
+$(TARGET): $(wildcard $(WIDGET)/**/*)
+	rm -f $@
+	zip -r $@ $(WIDGET)
 
 .PHONY: zip
 zip: $(TARGET)
 
-.PHONY: clean
-clean:
-	@rm $(CLEAN_LIST)
-
 .PHONY: install
 install: $(TARGET)
-	@unzip -o $< -d $(WIDGETS_FOLDER)
+	unzip -o $< -d $(WIDGETS_FOLDER)
 
-.PHONY: vim
-vim:
-	@vim $$(git ls-files)
+.PHONY: uninstall
+uninstall:
+	rm -rf $(WIDGETS_FOLDER)/$(WIDGET)
+
+.PHONY: clean
+clean:
+	rm $(CLEAN_LIST)
