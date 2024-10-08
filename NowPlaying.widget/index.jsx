@@ -32,14 +32,12 @@ const secondsToStr = (seconds) => {
 };
 
 const Widget = ({ nowplaying_info }) => {
-  if (nowplaying_info.title == null) return;
-
   const { title, artist, album, duration, elapsedTime, playbackRate } =
     nowplaying_info;
   const [src, setSrc] = useState(null);
   const [showControl, setShowControl] = useState(false);
   const [isPlaying, setIsPlaying] = useState(playbackRate > 0.0);
-  const [minimized, setMinimized] = useState(true);
+  const [minimized, setMinimized] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
   const [dragging, setDragging] = useState(false);
@@ -105,7 +103,7 @@ const Widget = ({ nowplaying_info }) => {
         className={"box-border z-10 place-content-center pointer-events-auto flex-col " +
           (minimized
             ? "bg-black radius-10 w-10 h-10 fixed overflow-hidden shadow"
-            : "w-40p h-full flex")}
+            : "w-60vh h-full flex")}
         onMouseMove={() => setShowControl(true)}
         onMouseLeave={() => setShowControl(false)}
         onMouseDown={minimized ? startDragging : null}
@@ -146,7 +144,7 @@ const Widget = ({ nowplaying_info }) => {
           {minimized && !showControl ? null : (
             <div
               className={"no-wrap align-center px-8 " +
-                (minimized ? "py-4" : "py-12")}
+                (minimized ? "py-4" : "pt-12")}
             >
               <div className="text-sm flex justify-between opacity-60">
                 <span>
@@ -189,10 +187,10 @@ const Widget = ({ nowplaying_info }) => {
                 )
                 : (
                   <div>
-                    <div className="text-ellipsis text-2xl font-bold w-full opacity-95 leading-none overflow-hidden">
+                    <div className="text-ellipsis text-1-5em font-bold w-full opacity-95 leading-none overflow-hidden">
                       {title}
                     </div>
-                    <div className="text-ellipsis text-2xl w-full opacity-60 overflow-hidden">
+                    <div className="py-1 text-ellipsis text-1-5em w-full opacity-60 leading-none overflow-hidden">
                       {artist}
                       {album ? `—${album}` : ""}
                     </div>
@@ -211,34 +209,34 @@ export const command =
   "nowplaying-cli get title artist album duration elapsedTime playbackRate";
 export const refreshFrequency = 1000;
 export const render = (nowplaying_info) => {
-  const { title, artist, album } = nowplaying_info;
-  if (title === null && artist === null && album === null) {
-    return null;
-  }
+  if (nowplaying_info == null) return null;
+
   return <Widget nowplaying_info={nowplaying_info} />;
 };
 
-export const initialState = {
-  "title": null,
-  "artist": null,
-  "album": null,
-  "duration": null,
-  "elapsedTime": null,
-  "playbackRate": null,
-};
+export const initialState = null;
 
 export const updateState = ({ output }) => {
+  if (output == null) return null;
+
   let [title, artist, album, duration, elapsedTime, playbackRate] = output
     .split("\n");
-  // FIXME: title can be 'null'...
   title = title === "null" ? null : title;
   artist = artist === "null" ? null : artist;
   album = album === "null" ? null : album;
-  duration = duration === "null" ? null : duration;
-  elapsedTime = elapsedTime === "null" ? null : elapsedTime;
+  duration = duration === "null" ? null : parseFloat(duration);
+  elapsedTime = elapsedTime === "null" ? null : parseFloat(elapsedTime);
   playbackRate = playbackRate === "null" ? null : parseFloat(playbackRate);
-  if (title === null && artist === null && album === null) {
-    return null;
-  }
-  return { title, artist, album, duration, elapsedTime, playbackRate };
+
+  if (title == null && artist == null && album == null) return null;
+
+  const nowplaying_info = {
+    title,
+    artist,
+    album,
+    duration,
+    elapsedTime,
+    playbackRate,
+  };
+  return nowplaying_info;
 };

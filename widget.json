@@ -1,7 +1,6 @@
 {
   "name": "Now-Playing",
-  "description":
-    "A now playing widget mimicking the Music app",
+  "description": "An apple music style now playing widget".
   "author": "cdltlehf",
   "email": "cdltlehf@naver.com"
 }
