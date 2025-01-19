@@ -34,7 +34,6 @@ export const style = {
       hue-rotate(var(--hue-rotate))
     `,
   },
-  "#wrapper": { "fontSize": "1.2vh" },
   ".pointer-events-none": { "pointerEvents": "none" },
   ".pointer-events-auto": { "pointerEvents": "auto" },
   ".justify-between": { "justifyContent": "space-between" },
@@ -44,11 +43,13 @@ export const style = {
   ".w-full": { "width": "100%" },
   ".w-60vh": { "width": "60vh" },
   ".w-2": { "width": "4.0rrem" },
-  ".w-10": { "width": "20.0rem" },
-  ".h-10": { "height": "20.0rem" },
+  ".w-20px": { "width": "20px" },
+  ".h-20px": { "height": "20px" },
   ".h-screen": { "height": "100vh" },
   ".w-screen": { "width": "100vw" },
   ".bg-black": { "backgroundColor": "black" },
+  ".bg-grey": { "backgroundColor": "grey" },
+  ".bg-white": { "backgroundColor": "white" },
   ".relative": { "position": "relative" },
   ".absolute": { "position": "absolute" },
   ".object-cover": { "objectFit": "cover" },
@@ -66,6 +67,8 @@ export const style = {
   ".opacity-80": { "opacity": 0.8 },
   ".opacity-95": { "opacity": 0.95 },
   ".opacity-60": { "opacity": 0.6 },
+  ".opacity-0": { "opacity": 0 },
+  ".hover-opacity-30: hover": { "opacity": 0.3 },
   ".place-content-center": { "placeContent": "center center" },
   ".brightness-pulse": {
     "animation": "2s ease-in-out 0s infinite alternate brightness-pulse",
@@ -75,6 +78,7 @@ export const style = {
     "backdropFilter": "blur(100px)",
   },
   ".z-10": { "zIndex": 10 },
+  ".z-20": { "zIndex": 20 },
   ".saturate-450": { "--saturate": 4.5 },
   "@keyframes brightness-pulse": {
     "from": {
@@ -107,7 +111,6 @@ export const style = {
   ".hover-filter-brightness-50: hover": {
     "filter": "brightness(0.5)",
   },
-  ".hidden #thumbnail": { "cursor": "default", "scale": "0.5" },
   "@keyframes spin": { "100%": { "transform": "rotate(360deg)" } },
   ".text-ellipsis": { "textOverflow": "ellipsis" },
   ".text-4xl": { "fontSize": "3rem", "lineHeight": 1 },
@@ -125,10 +128,16 @@ export const style = {
   ".align-center": { "textAlign": "center" },
   ".no-wrap": { "whiteSpace": "nowrap" },
   ".color-white": { "color": "white" },
+  ".color-grey": { "color": "grey" },
   ".overflow-hidden": { "overflow": "hidden" },
   ".px-1": { "paddingLeft": "0.25rem", "paddingRight": "0.25rem" },
   ".px-8": { "paddingLeft": "2rem", "paddingRight": "2rem" },
   ".py-1": { "paddingTop": "0.25rem", "paddingBottom": "0.25rem" },
   ".py-4": { "paddingTop": "1rem", "paddingBottom": "1rem" },
   ".pt-12": { "paddingTop": "3rem" },
+  ".cursor-resize": { "cursor": "nwse-resize" },
+  ".cursor-resize:hover": { "cursor": "nwse-resize" },
+
+  "#wrapper": { "fontSize": "1.2vh" },
+  ".hidden #thumbnail": { "cursor": "default", "scale": "0.5" },
 };

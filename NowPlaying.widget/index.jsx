@@ -3,6 +3,7 @@ import { style } from "./lib/style.js";
 
 const useState = React.useState;
 const useEffect = React.useEffect;
+const useRef = React.useRef;
 
 const fetchArtwork = () =>
   run("nowplaying-cli get artworkMIMEType artworkData")
@@ -31,6 +32,40 @@ const secondsToStr = (seconds) => {
   else return `${minutesStr}:${secondsStr}`;
 };
 
+const Placeholder = () => {
+  const placeholderRef = useRef(null);
+  const [fontSize, setFontSize] = useState(0);
+  useEffect(() => {
+    const placeholder = placeholderRef.current;
+    if (placeholder) {
+      const resizeObserver = new ResizeObserver(() => {
+        const { width, height } = placeholder.getBoundingClientRect();
+        const size = Math.min(width, height);
+        setFontSize(size);
+      });
+      resizeObserver.observe(placeholder);
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }
+  }, []);
+
+  return (
+    <div
+      ref={placeholderRef}
+      className="w-full h-full align-center place-content-center color-grey"
+      style={{
+        "verticalAlign": "middle",
+        "lineHeight": "1",
+        "background": "#404040",
+        "fontSize": `${fontSize}px`,
+      }}
+    >
+      &#x23f5;
+    </div>
+  );
+};
+
 const Widget = ({ nowplaying_info }) => {
   const { title, artist, album, duration, elapsedTime, playbackRate } =
     nowplaying_info;
@@ -38,11 +73,13 @@ const Widget = ({ nowplaying_info }) => {
   const [showControl, setShowControl] = useState(false);
   const [isPlaying, setIsPlaying] = useState(playbackRate > 0.0);
   const [minimized, setMinimized] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [position, setPosition] = useState({ x: 10, y: 10 });
+  const [size, setSize] = useState({ width: 250, height: 250 });
 
-  const [dragging, setDragging] = useState(false);
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
-  const [sourcePosition, setSourcePosition] = useState({ x: 0, y: 0 });
+  const [moving, setMoving] = useState(false);
+  const [resizing, setResizing] = useState(false);
+  const [moved, setMoved] = useState(false);
+  const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     fetchArtwork().then((src) => setSrc(src)).catch(() => setSrc(null));
@@ -58,19 +95,50 @@ const Widget = ({ nowplaying_info }) => {
     setIsPlaying(playbackRate > 0.0);
   }, [playbackRate]);
 
-  const startDragging = (e) => {
-    setDragging(true);
-    setSourcePosition({ x: e.clientX, y: e.clientY });
-    setOffset({ x: e.clientX - position.x, y: e.clientY - position.y });
+  const startMoving = (e) => {
+    setMoving(true);
+    setMouseOffset({ x: e.clientX - position.x, y: e.clientY - position.y });
   };
 
+  const startResizing = () => {
+    setResizing(true);
+  };
+
+  const minWidth = 100;
+  const maxWidth = 500;
+  const thresholdWidth = 250;
+
   const drag = (e) => {
-    if (!dragging) return;
-    setPosition({ x: e.clientX - offset.x, y: e.clientY - offset.y });
+    if (!moving) return;
+    if (resizing) {
+      const width = Math.min(
+        Math.max(
+          minWidth,
+          e.clientX - position.x,
+          e.clientY - position.y,
+        ),
+        maxWidth,
+      );
+      const height = width;
+      setSize({ width: width, height: height });
+      return;
+    }
+    if (
+      moved ||
+      Math.abs(position.x - e.clientX + mouseOffset.x) > 5 ||
+      Math.abs(position.y - e.clientY + mouseOffset.y) > 5
+    ) {
+      setMoved(true);
+      setPosition({
+        x: e.clientX - mouseOffset.x,
+        y: e.clientY - mouseOffset.y,
+      });
+    }
   };
 
   const stopDragging = () => {
-    setDragging(false);
+    setMoving(false);
+    setResizing(false);
   };
 
   return (
@@ -78,7 +146,7 @@ const Widget = ({ nowplaying_info }) => {
       id="wrapper"
       className={"color-white w-screen h-screen" + " " + (
         minimized ? "" : "flex place-content-center"
-      ) + " " + (dragging ? "pointer-events-auto" : "pointer-events-none")}
+      ) + " " + (moving ? "pointer-events-auto" : "pointer-events-none")}
       onMouseMove={drag}
       onMouseUp={stopDragging}
     >
@@ -99,42 +167,60 @@ const Widget = ({ nowplaying_info }) => {
         </div>
       )}
       <div
+        id="widget"
         className={"box-border z-10 place-content-center pointer-events-auto flex-col " +
           (minimized
-            ? "bg-black radius-10 w-10 h-10 fixed overflow-hidden shadow"
-            : "w-60vh h-full flex")}
-        onMouseMove={() => setShowControl(true)}
+            ? "bg-black radius-10 fixed overflow-hidden shadow "
+            : "w-60vh h-full flex ") +
+          (minimized && size.width == minWidth
+            ? "opacity-0 hover-opacity-30"
+            : "")}
+        onMouseMove={() =>
+          size.width >= thresholdWidth ? setShowControl(true) : null}
+        onMouseEnter={() =>
+          size.width >= thresholdWidth ? setShowControl(true) : null}
         onMouseLeave={() => setShowControl(false)}
-        onMouseDown={minimized ? startDragging : null}
+        onMouseDown={minimized ? startMoving : null}
         style={minimized
-          ? { top: `${position.y}px`, left: `${position.x}px` }
+          ? {
+            "top": `${position.y}px`,
+            "left": `${position.x}px`,
+            "width": `${size.width}px`,
+            "height": `${size.height}px`,
+          }
           : null}
       >
         <div className="flex-1"></div>
-        {src != null
-          ? (
-            <div
-              className="overflow-hidden aspect-square shadow radius-10 border place-content-center flex-none hover-filter-brightness-50"
-              onClick={(e) => {
-                if (
-                  !minimized ||
-                  (sourcePosition.x - e.clientX) ** 2 +
-                        (sourcePosition.y - e.clientY) ** 2 < 100
-                ) {
-                  setMinimized(!minimized);
-                  setShowControl(false);
-                }
-              }}
-            >
+        {!minimized ? null : (
+          <div
+            className="w-20px h-20px z-20 right-0 bottom-0 absolute cursor-resize"
+            onMouseDown={startResizing}
+          >
+          </div>
+        )}
+        <div
+          className="overflow-hidden aspect-square shadow radius-10 border place-content-center flex-none hover-filter-brightness-50"
+          onClick={(_) => {
+            if (!minimized) {
+              setMinimized(true);
+            } else if (!moved) {
+              setMinimized(false);
+            }
+            setShowControl(false);
+            setMoved(false);
+          }}
+        >
+          {src != null
+            ? (
               <img
                 alt="background"
                 draggable="false"
                 src={src}
                 className="w-full"
               />
-            </div>
-          )
-          : null}
+            )
+            : <Placeholder />}
+        </div>
         <div
           className={minimized
             ? "absolute w-full bottom-0 left-0 bg-black"
@@ -142,6 +228,7 @@ const Widget = ({ nowplaying_info }) => {
         >
           {minimized && !showControl ? null : (
             <div
+              id="control"
               className={"no-wrap align-center px-8 " +
                 (minimized ? "py-4" : "pt-12")}
             >
