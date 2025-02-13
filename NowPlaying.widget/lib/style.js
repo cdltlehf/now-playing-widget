@@ -55,6 +55,7 @@ export const style = {
   ".object-cover": { "objectFit": "cover" },
   ".object-contain": { "objectFit": "contain" },
   ".flex": { "display": "flex" },
+  ".block": { "display": "block" },
   ".fixed": { "position": "fixed" },
   ".flex-col": { "flexDirection": "column" },
   ".flex-none": { "flex": "none" },
@@ -67,8 +68,10 @@ export const style = {
   ".opacity-80": { "opacity": 0.8 },
   ".opacity-95": { "opacity": 0.95 },
   ".opacity-60": { "opacity": 0.6 },
+  ".opacity-30": { "opacity": 0.3 },
   ".opacity-0": { "opacity": 0 },
   ".hover-opacity-30: hover": { "opacity": 0.3 },
+  ".hover-opacity-80: hover": { "opacity": 0.8 },
   ".place-content-center": { "placeContent": "center center" },
   ".brightness-pulse": {
     "animation": "2s ease-in-out 0s infinite alternate brightness-pulse",
@@ -135,9 +138,5 @@ export const style = {
   ".py-1": { "paddingTop": "0.25rem", "paddingBottom": "0.25rem" },
   ".py-4": { "paddingTop": "1rem", "paddingBottom": "1rem" },
   ".pt-12": { "paddingTop": "3rem" },
-  ".cursor-resize": { "cursor": "nwse-resize" },
   ".cursor-resize:hover": { "cursor": "nwse-resize" },
-
-  "#wrapper": { "fontSize": "1.2vh" },
-  ".hidden #thumbnail": { "cursor": "default", "scale": "0.5" },
 };

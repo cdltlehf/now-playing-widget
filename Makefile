@@ -1,27 +1,28 @@
-TARGET_NAME := NowPlaying
-WIDGET := $(TARGET_NAME).widget
+WIDGET := NowPlaying.widget
 TARGET := $(WIDGET).zip
-WIDGETS_FOLDER := "${HOME}/Library/Application Support/Übersicht/widgets"
+WIDGETS_DIR := "${HOME}/Library/Application Support/Übersicht/widgets"
 
-CLEAN_LIST := $(TARGET)
+CLEAN_LIST := $(TARGET) $(WIDGET)
 
 .PHONY: default
 default: zip
 
-$(TARGET): $(wildcard $(WIDGET)/**/*)
+$(TARGET): $(shell find $(WIDGET) -type f)
 	rm -f $@
-	zip -r $@ $(WIDGET)
+	zip -r $@ $^
 
 .PHONY: zip
 zip: $(TARGET)
 
+$(WIDGETS_DIR)/$(WIDGET): $(TARGET)
+	unzip -o $< -d $(WIDGETS_DIR)
+
 .PHONY: install
-install: $(TARGET)
-	unzip -o $< -d $(WIDGETS_FOLDER)
+install: $(WIDGETS_DIR)/$(WIDGET)
 
 .PHONY: uninstall
 uninstall:
-	rm -rf $(WIDGETS_FOLDER)/$(WIDGET)
+	rm -rf $(WIDGETS_DIR)/$(WIDGET)
 
 .PHONY: clean
 clean:
