@@ -241,11 +241,11 @@ const Widget = ({ nowplaying_info }) => {
     fetchArtwork().then((src) => setSrc(src)).catch(() => setSrc(null));
   }, [title]);
 
-  // useEffect(() => {
-  //   if (src == null) {
-  //     fetchArtwork().then((src) => setSrc(src)).catch(() => setSrc(null));
-  //   }
-  // }, [nowplaying_info]);
+  useEffect(() => {
+    if (src == null) {
+      fetchArtwork().then((src) => setSrc(src)).catch(() => setSrc(null));
+    }
+  }, [nowplaying_info]);
 
   const startMoving = (e) => {
     if (e.button !== 0) return;

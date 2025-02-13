@@ -1,3 +1,5 @@
+SRC := src
+
 WIDGET := NowPlaying.widget
 TARGET := $(WIDGET).zip
 WIDGETS_DIR := "${HOME}/Library/Application Support/Übersicht/widgets"
@@ -7,7 +9,11 @@ CLEAN_LIST := $(TARGET) $(WIDGET)
 .PHONY: default
 default: zip
 
-$(TARGET): $(shell find $(WIDGET) -type f)
+$(WIDGET): $(shell find $(SRC) -type f)
+	rm -rf $@
+	cp -r $(SRC) $@
+
+$(TARGET): $(WIDGET)
 	rm -f $@
 	zip -r $@ $^
 
@@ -26,4 +32,4 @@ uninstall:
 
 .PHONY: clean
 clean:
-	rm $(CLEAN_LIST)
+	rm -rf $(CLEAN_LIST)
