@@ -1,6 +1,6 @@
 {
   "name": "Now-Playing",
-  "description": "An apple music style now playing widget",
-  "author": "cdltlehf",
-  "email": "cdltlehf@naver.com"
+  "description": "An Apple Music style now playing widget. It depends on nowplaying-cli.",
+  "author": "Sicheol Sung",
+  "email": "cdltlehf@gmail.com"
 }

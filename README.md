@@ -1,6 +1,9 @@
 # NowPlaying for [Übersicht](http://tracesof.net/uebersicht/)
 
-An apple music style now playing widget.
+![NowPlaying](./screenshot.png)
+
+An Apple Music style now playing widget.
+
 [GitHub](https://github.com/cdltlehf/youtube-now-playing-widget/tree/main)
 
 ## Dependencies
