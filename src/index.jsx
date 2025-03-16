@@ -12,8 +12,14 @@ const fetchArtwork = () =>
       if (mimeType === "null" || data === "null") {
         throw new Error("Artwork not available");
       }
+      runHook();
       return `data:${mimeType};base64,${data}`;
     });
+
+const runHook = () =>
+  run('eval "${NOW_PLAYING_WIDGET_HOOK}"').catch((e) => {
+    throw new Error(`Failed to run hook: ${e}`);
+  });
 const togglePlayPause = () => run("nowplaying-cli togglePlayPause");
 const nextTrack = () => run("nowplaying-cli next");
 const previousTrack = () => run("nowplaying-cli previous");
@@ -408,7 +414,7 @@ export const render = (nowplaying_info) => {
 
 export const initialState = null;
 
-export const updateState = ({ output }) => {
+export const updateState = ({ output }, previousState) => {
   if (output == null) return null;
 
   let [title, artist, album, duration, elapsedTime, playbackRate] = output
