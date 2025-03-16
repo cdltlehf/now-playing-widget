@@ -1,10 +1,12 @@
 # NowPlaying for [Übersicht](http://tracesof.net/uebersicht/)
 
+An Apple Music style now playing widget.
+
+## Screenshots
+
 ![NowPlaying](./screenshot.png)
 
 - [Source](https://open.spotify.com/track/7GhIk7Il098yCjg4BQjzvb)
-
-An Apple Music style now playing widget.
 
 ## Dependencies
 
@@ -35,4 +37,4 @@ For the above example, refer to the following repositories:
 
 ## Links
 
-- [GitHub ![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/cdltlehf/now-playing-widget)
+- [GitHub](https://github.com/cdltlehf/now-playing-widget)
