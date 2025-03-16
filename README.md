@@ -35,4 +35,4 @@ For the above example, refer to the following repositories:
 
 ## Links
 
-- [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/cdltlehf/youtube-now-playing-widget)
+- [GitHub ![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/cdltlehf/now-playing-widget)
