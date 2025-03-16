@@ -2,9 +2,9 @@
 
 ![NowPlaying](./screenshot.png)
 
-An Apple Music style now playing widget.
+- [Source](https://open.spotify.com/track/7GhIk7Il098yCjg4BQjzvb)
 
-[GitHub](https://github.com/cdltlehf/youtube-now-playing-widget)
+An Apple Music style now playing widget.
 
 ## Dependencies
 
@@ -32,3 +32,7 @@ NOW_PLAYING_WIDGET_HOOK='nowplaying-cli get artworkData \
 For the above example, refer to the following repositories:
 - [colorgen](https://github.com/cdltlehf/colorgen)
 - [flavours](https://github.com/Misterio77/flavours)
+
+## Links
+
+- [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/cdltlehf/youtube-now-playing-widget)
