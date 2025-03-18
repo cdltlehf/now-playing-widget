@@ -26,7 +26,7 @@ hooks will be invoked after loading the artwork.
 ```bash
 NOW_PLAYING_WIDGET_HOOK='nowplaying-cli get artworkData \
   | base64 -d \
-  | colorgen --stdin \
+  | colorgen - \
   | flavours apply --stdin \
 '
 ```
