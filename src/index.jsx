@@ -148,7 +148,7 @@ const InformationComponent = (
   );
 };
 
-const AlbumImageComponent = ({ src, onClick }) => {
+const AlbumImageComponent = ({ src, minimized, onClick }) => {
   const imgDom = (
     <img
       alt="background"
@@ -158,9 +158,13 @@ const AlbumImageComponent = ({ src, onClick }) => {
     />
   );
 
+  const classNames = [
+    "box-border overflow-hidden shadow border place-content-center flex-none hover-filter-brightness-50 align-center",
+  ];
+  if (!minimized) classNames.push("radius-10");
   return (
     <div
-      className="box-border overflow-hidden aspect-square shadow radius-10 border place-content-center flex-none hover-filter-brightness-50 align-center"
+      className={classNames.join(" ")}
       onClick={onClick}
     >
       {src != null ? imgDom : <Placeholder />}
@@ -186,7 +190,7 @@ const MainWidgetComponent = ({
     "box-border z-10 place-content-center pointer-events-auto flex-col",
   ];
   if (minimized) {
-    classNames.push("bg-black radius-10 fixed shadow overflow-hidden");
+    classNames.push("bg-black radius-10 fixed shadow overflow-hidden border");
   } else {
     classNames.push("w-60vh h-full flex");
   }
@@ -216,7 +220,11 @@ const MainWidgetComponent = ({
       style={minimized ? positionStyle : null}
     >
       <div className="flex-1"></div>
-      <AlbumImageComponent src={src} onClick={onClickAlbumImage} />
+      <AlbumImageComponent
+        src={src}
+        minimized={minimized}
+        onClick={onClickAlbumImage}
+      />
       <InformationComponent
         nowplaying_info={nowplaying_info}
         minimized={minimized}
