@@ -23,6 +23,7 @@ const runHook = () =>
 const togglePlayPause = () => run("nowplaying-cli togglePlayPause");
 const nextTrack = () => run("nowplaying-cli next");
 const previousTrack = () => run("nowplaying-cli previous");
+const seekTrack = (time) => run(`nowplaying-cli seek ${time}`);
 
 const secondsToStr = (seconds) => {
   const hours = Math.floor(seconds / 3600);
@@ -50,9 +51,7 @@ const Placeholder = () => {
         setFontSize(size);
       });
       resizeObserver.observe(placeholder);
-      return () => {
-        resizeObserver.disconnect();
-      };
+      return () => resizeObserver.disconnect();
     }
   }, []);
 
@@ -78,10 +77,17 @@ const InformationComponent = (
   const { title, artist, album, duration, elapsedTime, playbackRate } =
     nowplaying_info;
   const [isPlaying, setIsPlaying] = useState(playbackRate > 0.0);
+  const [localElapsedTime, setLocalElapsedTime] = useState(elapsedTime);
+  const onClickProgress = (e) => {
+    const rect = e.target.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const progress = x / rect.width;
+    const seekTime = duration * progress;
+    setLocalElapsedTime(seekTime);
+    seekTrack(seekTime);
+  };
 
-  useEffect(() => {
-    setIsPlaying(playbackRate > 0.0);
-  }, [playbackRate]);
+  useEffect(() => setIsPlaying(playbackRate > 0.0), [playbackRate]);
 
   if (minimized && !showController) return null;
   return (
@@ -97,14 +103,21 @@ const InformationComponent = (
       >
         <div className="text-sm flex justify-between opacity-60">
           <span>
-            {elapsedTime ? secondsToStr(elapsedTime) : "--:--"}
+            {localElapsedTime ? secondsToStr(localElapsedTime) : "--:--"}
           </span>
           <span>
-            {elapsedTime ? `-${secondsToStr(duration - elapsedTime)}` : "--:--"}
+            {localElapsedTime
+              ? `-${secondsToStr(duration - localElapsedTime)}`
+              : "--:--"}
           </span>
         </div>
         <div>
-          <progress max={duration} value={elapsedTime}></progress>
+          <progress
+            max={duration}
+            value={localElapsedTime}
+            onClick={onClickProgress}
+          >
+          </progress>
         </div>
         {showController || minimized
           ? (
@@ -251,9 +264,10 @@ const Widget = ({ nowplaying_info }) => {
   const [isMoved, setIsMoved] = useState(false);
   const [willPreventMinimize, setWillPreventMinimize] = useState(false);
 
-  useEffect(() => {
-    fetchArtwork().then((src) => setSrc(src)).catch(() => setSrc(null));
-  }, [title]);
+  useEffect(
+    () => fetchArtwork().then((src) => setSrc(src)).catch(() => setSrc(null)),
+    [title],
+  );
 
   useEffect(() => {
     if (src == null) {
@@ -422,7 +436,7 @@ export const render = (nowplaying_info) => {
 
 export const initialState = null;
 
-export const updateState = ({ output }, previousState) => {
+export const updateState = ({ output }, _) => {
   if (output == null) return null;
 
   let [title, artist, album, duration, elapsedTime, playbackRate] = output
