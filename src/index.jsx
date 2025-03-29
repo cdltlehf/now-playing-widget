@@ -77,6 +77,7 @@ const InformationComponent = (
   const { title, artist, album, duration, elapsedTime, playbackRate } =
     nowplaying_info;
   const [isPlaying, setIsPlaying] = useState(playbackRate > 0.0);
+  const [isSeeking, setIsSeeking] = useState(false);
   const [localElapsedTime, setLocalElapsedTime] = useState(elapsedTime);
   const onClickProgress = (e) => {
     const rect = e.target.getBoundingClientRect();
@@ -84,10 +85,18 @@ const InformationComponent = (
     const progress = x / rect.width;
     const seekTime = duration * progress;
     setLocalElapsedTime(seekTime);
+    setIsSeeking(true);
     seekTrack(seekTime);
   };
 
-  useEffect(() => setIsPlaying(playbackRate > 0.0), [playbackRate]);
+  useEffect(() => {
+    setIsPlaying(playbackRate > 0.0), [playbackRate];
+  }, [playbackRate]);
+
+  useEffect(() => {
+    if (isSeeking) setIsSeeking(false);
+    else setLocalElapsedTime(elapsedTime);
+  }, [elapsedTime]);
 
   if (minimized && !showController) return null;
   return (

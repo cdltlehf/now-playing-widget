@@ -3,9 +3,9 @@ export const style = {
   "cursor": "default",
   "fontFamily": "sans-serif",
   "progress": {
-    "borderRadius": "4px",
+    "borderRadius": "3px",
     "margin": "9px 0px 10px 0px",
-    "height": "4px",
+    "height": "6px",
     "width": "100%",
   },
   "pointerEvents": "none",
