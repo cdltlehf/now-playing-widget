@@ -274,7 +274,9 @@ const Widget = ({ nowplaying_info }) => {
   const [willPreventMinimize, setWillPreventMinimize] = useState(false);
 
   useEffect(
-    () => fetchArtwork().then((src) => setSrc(src)).catch(() => setSrc(null)),
+    () => {
+      fetchArtwork().then((src) => setSrc(src)).catch(() => setSrc(null));
+    },
     [title],
   );
 
